@@ -1,0 +1,22 @@
+﻿@model IEnumerable<WowFood.DomainModels.Food>
+@using WowFood.Helper
+@{
+    ViewBag.Title = "Trang chủ";
+}
+
+<div class="row">
+    <h2 class="text-center">🍗 Thực Đơn 🥩</h2>
+    @foreach (var food in Model)
+    {
+        <div class="col-md-4" style="">
+            <div class="card " style="margin: 2rem; background-color: aliceblue; padding: 3rem">
+                <img class="card-img-top Photo_@food.FoodID" src="~/UploadedFiles/@food.Photo" alt="Card image cap" style=" height: 150px; width:250px ">
+                <div class="card-body">
+                    <strong class="card-title FoodName_@food.FoodID">@food.FoodName</strong>
+                    <p class="card-text FoodPrice_@food.FoodID">@Format.FormatNumber(food.FoodPrice, 0)/đ</p>
+                    <a href="#" class="btn btn-primary btn-block addToCart" data-id="@food.FoodID">Đặt món</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

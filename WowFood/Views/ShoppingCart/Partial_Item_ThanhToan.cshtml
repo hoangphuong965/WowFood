@@ -1,0 +1,27 @@
+﻿@model IEnumerable<WowFood.DomainModels.ShoppingCartItem>
+@using WowFood.Helper
+<h3>THÔNG TIN GIỎ HÀNG</h3>
+@if (Model != null)
+{
+    var tongtien = decimal.Zero;
+    <div style="border:1px solid #808080;">
+        <table class="table">
+            @foreach (var item in Model)
+            {
+                tongtien += item.TotalPrice;
+                <tr>
+                    <td>@item.FoodName / @item.Quantity phần</td>
+                    <td>@Format.FormatNumber(item.Quantity * item.Price, 0)</td>
+                </tr>
+            }
+            <tr>
+                <td><strong>Tổng tiền</strong></td>
+                <td><strong>@Format.FormatNumber(tongtien, 0)</strong></td>
+            </tr>
+        </table>
+    </div>
+}
+else
+{
+
+}

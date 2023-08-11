@@ -1,0 +1,51 @@
+﻿@model List<WowFood.DomainModels.ShoppingCartItem>
+@using WowFood.Helper;
+@{
+    ViewBag.Title = "Giỏ hàng của bạn";
+    var tongtien = decimal.Zero;
+
+}
+
+<h2>Giỏ hàng</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table table-striped" id="table">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Tổng giá</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                tongtien += item.TotalPrice;
+                <tr class="trow_@item.FoodId">
+                    <td>
+                        <img src="~/UploadedFiles/@item.ProductImg" alt="Food Image" style=" height: 50px; width:50px ">
+                        @item.FoodName
+                    </td>
+                    <td><input type="number" class="food_@item.FoodId" id="myInput" data-id="@item.FoodId" data-name="@item.FoodName" min="1" value="@item.Quantity" style=" width: 35px;" /></td>
+                    <td>@Format.FormatNumber(@item.Price) đ</td>
+                    <td class="TotalPrice_@item.FoodId">@Format.FormatNumber(@item.TotalPrice) đ</td>
+                    <td class="deletefood" style="cursor: pointer" data-name="@item.FoodName" data-id="@item.FoodId">❌</td>
+                </tr>
+            }
+            <tr>
+                <td></td>
+                <td></td>
+                <td><strong>Tổng:</strong></td>
+                <td><strong class="tongtien">@Format.FormatNumber(tongtien) đ</strong></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="/ShoppingCart/CheckOut" class="btn btn-primary btn-block"><strong>Thanh Toán</strong></a>
+}
+else
+{
+    <p class="emptyCart">Giỏ hàng trống</p>
+}

@@ -1,0 +1,119 @@
+﻿@model X.PagedList.IPagedList<WowFood.DomainModels.Order>
+@using X.PagedList.Mvc;
+@using X.PagedList.Mvc.Common;
+
+@{
+    ViewBag.Title = "Đơn hàng đã giao";
+}
+<style>
+    .pagination-container {
+        display: flex;
+        flex: 1;
+    }
+
+    .pagination {
+        display: flex;
+        flex: 1;
+        list-style: none;
+        padding: 0;
+        gap: .625rem;
+        justify-content: center;
+    }
+
+    .page-item, .page-link {
+        height: 2rem;
+        width: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .PagedList-pageCountAndLocation {
+        justify-content: start;
+        order: -1;
+        flex: 1;
+        // expands the div to max available width
+    }
+
+    .pagination a {
+        background-color: cornflowerblue; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .pagination .active {
+        background-color: #1a64ea; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">@ViewBag.Title</h3>
+
+                <div class="card-tools">
+                    <a href="/admin/order" class="btn btn-warning">Đơn hàng chưa giao</a>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Mã số đơn hàng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Code</td>
+                                <td>@item.Customer.UserName</td>
+                                <td>@item.Customer.Mobile</td>
+                                <td>@item.Customer.Email</td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td><p style="background-color: aliceblue; text-align: center; font-weight: bold; ">@(item.Delivered==true?"Đã giao hàng":"")</p></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-success btnDetail" data-code="@item.Code" data-toggle="modal" data-target="#ModalCenterDetail">Chi tiết</a>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+        @* Detail *@
+        @{ 
+            Html.RenderPartial("Partial_OrderDetails");
+        }
+
+        @if (Model != null && Model.Any())
+        {
+            @Html.PagedListPager(Model, page => Url.Action("GetDeliveredOrders", new { page }), PagedListRenderOptionsBase.ClassicPlusFirstAndLast)
+        }
+
+    </div>
+</div>
+@section scripts{
+    <script src="~/Scripts/jsOrderDetails.js"></script>
+}

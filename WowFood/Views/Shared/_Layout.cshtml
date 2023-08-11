@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - WowFood</title>
+    <link href="~/Content/clients/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+    <!-- toastr -->
+    <link href="~/Content/clients/plugins/toastr/toastr.min.css" rel="stylesheet" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <style>
+        .cart-icon {
+            position: relative;
+            display: inline-block;
+            /* width: 30px;
+            height: 30px;*/
+            color: #fff;
+            text-align: center;
+            /*line-height: 30px;
+            font-size: 16px;*/
+        }
+
+            .cart-icon::after {
+                content: attr(data-count);
+                position: absolute;
+                top: -10px;
+                right: -15px;
+                width: 20px;
+                height: 20px;
+                background-color: brown;
+                border-radius: 50%;
+                color: #fff;
+                font-size: 12px;
+                line-height: 20px;
+            }
+    </style>
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                @Html.ActionLink("WowFood", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("Trang Chủ", "Index", "Home")</li>
+                    <li>@Html.ActionLink("Giới Thiệu", "About", "Home")</li>
+                    <li>@Html.ActionLink("Liên Hệ", "Contact", "Home")</li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/ShoppingCart">
+                            <span class="cart-icon" data-count="0">
+                                <i class="fa fa-cart-plus"></i>
+                            </span>
+                        </a>
+                    </li>
+
+                    @if (Session["CurrentUserName"] == null)
+                    {
+                        <li>@Html.ActionLink("Đăng Nhập", "Login", "Account")</li>
+                        <li>@Html.ActionLink("Đăng Ký", "Register", "Account")</li>
+                    }
+                    @if (Session["CurrentUserName"] != null)
+                    {
+                        <li class="dropdown" style="padding:7px">
+                            <ul class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                Xin chào, @Session["CurrentUserName"]
+                                <li class="caret"></li>
+                            </ul>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Đăng xuất", "Logout", "Account")</li>
+                                @if (Session["CurrentUserIsAdmin"].Equals(true))
+                                {
+                                    <li><a href="/admin/food">Trang quản lý</a></li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - WowFood</p>
+        </footer>
+    </div>
+
+    <script src="~/Content/clients/plugins/jquery/jquery.min.js"></script>
+    <script src="~/Content/clients/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Scripts/jsShopping.js"></script>
+    <script src="~/Content/clients/plugins/toastr/toastr.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

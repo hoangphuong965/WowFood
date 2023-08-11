@@ -1,0 +1,64 @@
+﻿@model WowFood.ViewModels.FoodViewModel
+@{
+    ViewBag.Title = "Thêm món ăn";
+}
+<style>
+    .field-validation-error{
+        color: darkred;
+    }
+</style>
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">Thêm món ăn</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/admin/home">Món ăn</a></li>
+                    <li class="breadcrumb-item active">Thêm món ăn</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        @using (Html.BeginForm("Create", "Food", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="card-body">
+                <div class="form-group">
+                    @Html.Label("Tên món ăn")
+                    @Html.TextBoxFor(temp => temp.FoodName, new { placeholder = "Tên món ăn", @class = "form-control", autofocus=""})
+                    @Html.ValidationMessageFor(temp => temp.FoodName)
+                </div>
+                <div class="form-group">
+                    @Html.Label("Giá món ăn")
+                    @Html.TextBoxFor(temp => temp.FoodPrice, new { placeholder = "Giá món ăn", @class = "form-control" })
+                    @Html.ValidationMessageFor(temp => temp.FoodPrice)
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputFile">Hình ảnh món ăn</label>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            @Html.EditorFor(temp => temp.Photo, new { htmlAttributes = new { @class = "form-control", @type = "file" } })
+                            <br />
+                            @Html.ValidationMessageFor(temp => temp.Photo)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.card-body -->
+
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Thêm mới</button>
+            </div>
+
+        }
+    </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->

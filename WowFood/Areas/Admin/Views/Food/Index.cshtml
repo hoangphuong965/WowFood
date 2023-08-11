@@ -1,0 +1,234 @@
+﻿@model List<WowFood.ViewModels.FoodViewModel>
+@using WowFood.Helper;
+@{
+    ViewBag.Title = "Quản lý món ăn";
+    var message = TempData["Message"];
+}
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0">@ViewBag.Title</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="/admin/home">Home</a></li>
+                    <li class="breadcrumb-item active">món ăn</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+        <div class="row">
+            <div class="col-sm-6">
+                <a href="/Admin/Food/Create" class="btn btn-primary">Thêm món</a>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            @foreach (var food in Model)
+            {
+                var IsShow = food.IsShow ? "<i class='fa fa-check text-success'></i>" : "<i class='fas fa-times text-danger'></i>";
+                <div class="col-sm mb-4 id_@food.FoodId">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top Photo_@food.FoodId" src="~/UploadedFiles/@food.Photo" alt="Card image cap" style=" height: 168px; ">
+                        <div class="card-body">
+                            <h5 class="card-title FoodName_@food.FoodId">@food.FoodName</h5>
+                            <p class="card-text FoodPrice_@food.FoodId">@Format.FormatNumber(food.FoodPrice, 0)/đ</p>
+                            <a href="#" class="btnThayDoi" data-id="@food.FoodId" data-toggle="modal" data-target="#ModalCenter">Thay đổi</a> |
+                            <a href="#" class="btnXoa" data-id="@food.FoodId" data-name="@food.FoodName">Xóa</a> |
+
+                            
+                                <a href="#" class="btnShow" data-toggle="tooltip" title="Ẩn Hiển Món Ăn" data-id="@food.FoodId" data-name="@food.FoodName">@Html.Raw(IsShow)</a>
+                          
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="modal fade" id="ModalCenter">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">Thay đổi</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="card-body">
+                            <input type="hidden" id="FoodID" value="" />
+                            <div class="form-group">
+                                <label>Tên món ăn</label>
+                                @Html.TextBox("FoodName", null, new { @class = "form-control" })
+                                @Html.ValidationMessage("")
+                            </div>
+                            <div class="form-group">
+                                <label>Giá món ăn</label>
+                                @Html.TextBox("FoodPrice", null, new { @class = "form-control" })
+                                @Html.ValidationMessage("")
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputFile">Hình ảnh món ăn</label>
+                                <div class="input-group">
+                                    <div class="custom-file">
+                                        <div class="imageFood"></div>
+                                        <input type="file" name="imgFile" id="imgFile" class="form-control newPhoto" multiple />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary btnSave">Cập nhật</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $("body").on('click', ".btnXoa", function () {
+                var id = parseInt($(this).data("id"));
+                var name = $(this).data("name");
+                var confirm = window.confirm(`Bạn có muốn xóa món "${name}" không???`);
+                if (confirm === true) {
+                    $.ajax({
+                        url: '/admin/food/delete',
+                        type: 'GET',
+                        data: { id },
+                        success: function (res) {
+                            if (res.success) {
+                                $('.id_' + id).remove();
+                                toastr.success(`Xóa món "${name}" thành công`);
+                            }
+                        }
+                    });
+                }
+            });
+
+            $('body').on('click', ".btnThayDoi", function () {
+                var id = parseInt($(this).data("id"));
+                $('#ModalCenter').on('shown.bs.modal', function () {
+                    $('#FoodName').trigger('focus') // bootstrap5 thay doi focus
+                })
+                $.ajax({
+                    url: '/admin/food/update',
+                    type: 'GET',
+                    data: { id },
+                    success: function (res) {
+                        if (res.success) {
+                            var foodName = res.food.FoodName;
+                            var foodPrice = res.food.FoodPrice;
+                            var photo = res.food.Photo;
+
+                            $("#FoodName").val(foodName);
+                            $("#FoodID").val(id);
+                            $("#FoodPrice").val(foodPrice);
+                            $('.imageFood').html(`<img id="Photo" src="/UploadedFiles/${photo}" name="${photo}" style=" height: 100px; width: 160px " />`)
+                        }
+                    }
+                });
+            });
+
+            $("body").on('click', ".btnSave", function () {
+                var formData = new FormData();
+                var foodName = $("#FoodName").val();
+                var foodId = $("#FoodID").val();
+                var foodPrice = $("#FoodPrice").val();
+                var photo = $('#Photo').attr('name');
+
+                formData.append("FoodName", foodName);
+                formData.append("FoodPrice", foodPrice);
+                formData.append("FoodId", foodId);
+                formData.append("Photo", photo);
+                formData.append("NewPhoto", $("#imgFile")[0].files[0])
+
+
+                $.ajax({
+                    url: '@Url.Action("Update", "Food")',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        if (res.success) {
+                            console.log(res);
+                            $('#ModalCenter').modal('hide');
+                            getFoodById(foodId);
+                            toastr.success(`Cập nhật món "${foodName}" thành công`);
+                        }
+                    },
+                    error: function (error) {
+                        alert('something happen in script.');
+                        console.log('error:' + imgFile);
+                    }
+                });
+            });
+
+        });
+
+        function getFoodById(id) {
+            $.ajax({
+                url: '/admin/food/GetFoodById',
+                type: 'GET',
+                data: { id },
+                success: function (res) {
+                    if (res.success) {
+                        $(".FoodName_" + id).text(res.food.FoodName);
+                        $(".FoodPrice_" + id).text(`${res.FoodPrice}/đ`);
+                        $(".Photo_" + id).attr("src", `/UploadedFiles/${res.food.Photo}`);
+                    }
+                }
+            });
+        }
+
+
+        $('body').on('click', ".btnShow", function (e) {
+            e.preventDefault();
+            var btn = $(this);
+            var id = parseInt($(this).data("id"));
+            var name = $(this).data("name");
+            $.ajax({
+                url: '/admin/food/IsShow',
+                type: 'GET',
+                data: { id },
+                success: function (res) {
+                    if (res.message == true) {
+                        btn.html("<i class='fa fa-check text-success'></i>");
+                        toastr.success(`Đã hiển thị món ${name}`);
+                    }
+                    if (res.message == false) {
+                        btn.html("<i class='fas fa-times text-danger'></i>");
+                        toastr.info(`Đã ẩn món ${name}`);
+                    }
+                }
+            });
+        });
+
+    </script>
+    @if (message != null)
+    {
+        <script>toastr.success("@message")</script>
+    }
+}

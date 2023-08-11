@@ -1,0 +1,55 @@
+﻿@model WowFood.DomainModels.Order
+@{
+    ViewBag.Title = "Thanh toán";
+}
+<style>
+    .field-validation-error {
+        color: firebrick
+    }
+</style>
+<h3 class="text-center">Thanh toán</h3>
+
+<div class="row">
+    <div id="show_success"></div>
+    <div class="col-md-6 checkout">
+        @using (Html.BeginForm("CheckOut", "ShoppingCart", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+            <h3>Thông tin khách hàng</h3>
+            <div class="form-group">
+                <label>Họ tên khách hàng</label>
+                <p class="form-control" style="width: 28rem">@ViewBag.UserInfo.UserName</p>
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <p class="form-control" style="width: 28rem">@ViewBag.UserInfo.Mobile</p>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <p class="form-control" style="width: 28rem">@ViewBag.UserInfo.Email</p>
+            </div>
+            <div class="form-group">
+                <label>Địa chỉ</label>
+                <input type="text" name="Address" class="form-control" />
+                @Html.ValidationMessageFor(temp => temp.Address)
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success datahang" style="width: 28rem">Đặt hàng</button>
+            </div>
+        }
+    </div>
+    <div class="col-md-6 thanhtoan">
+        @Html.Action("Partial_Item_ThanhToan", "ShoppingCart")
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('form').submit(function () {
+                $('button[type="submit"]').prop('disabled', true);
+                toastr.success("Đang tiến hành đặt hàng", "Thông báo", { timeOut: 10000, positionClass: "toast-top-center"});
+            });
+        });
+    </script>
+}

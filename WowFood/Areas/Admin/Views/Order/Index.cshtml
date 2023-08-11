@@ -1,0 +1,179 @@
+﻿@model X.PagedList.IPagedList<WowFood.DomainModels.Order>
+@using X.PagedList.Mvc;
+@using X.PagedList.Mvc.Common;
+
+@{
+    ViewBag.Title = "Đơn đặt hàng";
+    var orderid = 0;
+}
+<style>
+    .pagination-container {
+        display: flex;
+        flex: 1;
+    }
+
+    .pagination {
+        display: flex;
+        flex: 1;
+        list-style: none;
+        padding: 0;
+        gap: .625rem;
+        justify-content: center;
+    }
+
+    .page-item, .page-link {
+        height: 2rem;
+        width: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .PagedList-pageCountAndLocation {
+        justify-content: start;
+        order: -1;
+        flex: 1;
+        // expands the div to max available width
+    }
+
+    .pagination a {
+        background-color: cornflowerblue; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .pagination .active {
+        background-color: #1a64ea; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Đơn chưa giao</h3>
+
+                <div class="card-tools">
+                    <a href="/admin/order/GetDeliveredOrders" class="btn btn-success">Đơn hàng đã giao</a>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Mã số đơn hàng</th>
+                            <th>Tên khách hàng</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            orderid = item.OrderId;
+                            <tr id="trow_@item.Code">
+                                <td>@item.Code</td>
+                                <td>@item.Customer.UserName</td>
+                                <td>@item.Customer.Mobile</td>
+                                <td>@item.Customer.Email</td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td><p style="background-color: yellow; text-align: center; font-weight: bold; ">@(item.Delivered==false?"Chưa giao hàng":"")</p></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-success btnDetail" data-OrderId="@item.OrderId"  data-code="@item.Code" data-toggle="modal" data-target="#ModalCenterDetail">Chi tiết</a>
+                                    <a href="#" class="btn btn-sm btn-danger btnCapNhat" data-code="@item.Code" data-toggle="modal" data-target="#ModalCenter">Cập nhật</a>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+        @* Update  *@
+        <div class="modal fade" id="ModalCenter">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalCenterTitle">Cập nhật trạng thái giao hàng</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="code" value="" />
+                        <div class="form-group">
+                            <label>Trạng thái</label>
+                            <select class="form-control" id="status">
+                                <option value="1">
+                                    Đã giao hàng
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-primary btnSave">Cập nhật</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        @* Detail *@
+        @{ Html.RenderPartial("Partial_OrderDetails"); }
+
+
+        @if (Model != null && Model.Any())
+        {
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), PagedListRenderOptionsBase.ClassicPlusFirstAndLast)
+        }
+
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('body').on('click', ".btnCapNhat", function () {
+                var code = $(this).data("code");
+                $('#code').val(code);
+            });
+
+            $('body').on('click', ".btnSave", function () {
+                var code = $("#code").val();
+                var status = $("#status").val();
+                status = 1 ? "True" : "False";
+                $.ajax({
+                    url: '/admin/order/UpdateDeliveryStatus',
+                    type: 'POST',
+                    data: { code: code, status: status },
+                    success: function (res) {
+                        if (res.success) {
+                            $('#ModalCenter').modal('hide');
+                            $('#trow_' + code).remove();
+                            toastr.success(`Cập nhật mã đơn hàng "${code}" thành công`);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="~/Scripts/jsOrderDetails.js"></script>
+}

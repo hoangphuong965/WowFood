@@ -1,0 +1,59 @@
+﻿<!-- Sidebar -->
+<div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+            <img src="~/Content/clients/dist/img/wowfood/logo1.jpg" class="img-rounded mt-2" alt="User Image">
+        </div>
+        <div class="info">
+            <a href="/admin/home" class="d-block">Quản Lý WowFood</a>
+        </div>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+            <!-- Add icons to the links using the .nav-icon class
+    with font-awesome or any other icon font library -->
+            <li class="nav-item">
+                <a href="/admin/home" class="nav-link">
+                    <i class="nav-icon fas fa-balance-scale"></i>
+                    <p>Trang Quản Lý</p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/admin/order" class="nav-link">
+                    <i class="nav-icon 	fas fa-list"></i>
+                    <p>
+                        Danh sách đơn hàng
+                    </p>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="/admin/food" class="nav-link">
+                    <i class="nav-icon fas fa-hamburger"></i>
+                    <i class="nav-icon "></i>
+                    <p>
+                        Quản lý món ăn
+                    </p>
+                </a>
+            </li>
+            
+
+            @* ================================================ *@
+
+            <li class="nav-header">Danh sách khách Hàng</li>
+            <li class="nav-item">
+                <a href="/admin/customer" class="nav-link">
+                    <i class="nav-icon 	fas fa-users"></i>
+                    <p>
+                        khách hàng
+                        <span class="badge badge-info right">@Html.Action("CountCustomers", "Customer")</span>
+                    </p>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+</div>
+<!-- /.sidebar -->

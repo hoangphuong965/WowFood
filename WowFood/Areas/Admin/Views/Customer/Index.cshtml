@@ -1,0 +1,113 @@
+﻿@model IPagedList<WowFood.DomainModels.Customer>
+@using X.PagedList.Mvc;
+@using X.PagedList.Mvc.Common;
+@using X.PagedList;
+
+@{
+    ViewBag.Title = "Danh sách khách hàng";
+}
+<style>
+    .pagination-container {
+        display: flex;
+        flex: 1;
+    }
+
+    .pagination {
+        display: flex;
+        flex: 1;
+        list-style: none;
+        padding: 0;
+        gap: .625rem;
+        justify-content: center;
+    }
+
+    .page-item, .page-link {
+        height: 2rem;
+        width: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .PagedList-pageCountAndLocation {
+        justify-content: start;
+        order: -1;
+        flex: 1;
+        // expands the div to max available width
+    }
+
+    .pagination a {
+        background-color: cornflowerblue; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .pagination .active {
+        background-color: #1a64ea; /* Green */
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+</style>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">@ViewBag.Title</h3>
+
+                <div class="card-tools">
+                    <form action="/Admin/customer">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="find" value="@ViewBag.find" class="form-control float-right" placeholder="Tìm số điện thoại">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body table-responsive p-0">
+                <table class="table table-hover text-nowrap">
+                    <thead>
+                        <tr>
+                            <th>Tên người dùng</th>
+                            <th>Số điện thoại</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.UserName</td>
+                                <td>@item.Mobile</td>
+                                <td>@item.Email</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+
+        @if (Model != null && Model.Any())
+        {
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), PagedListRenderOptionsBase.ClassicPlusFirstAndLast)
+        }
+
+    </div>
+</div>
+
